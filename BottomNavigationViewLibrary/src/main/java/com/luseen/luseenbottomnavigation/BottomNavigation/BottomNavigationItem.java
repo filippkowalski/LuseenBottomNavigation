@@ -6,6 +6,7 @@ public class BottomNavigationItem {
     private int color;
     private int imageResource;
     private int imageResourceActive = 0;
+    private boolean showBadge;
 
     public BottomNavigationItem(String title, int color, int imageResource) {
         this.title = title;
@@ -42,5 +43,13 @@ public class BottomNavigationItem {
 
     public void setImageResourceActive(int imageResourceActive) {
         this.imageResourceActive = imageResourceActive;
+    }
+
+    public boolean showBadge() {
+        return showBadge;
+    }
+
+    public void setShowBadge(boolean showBadge) {
+        this.showBadge = showBadge;
     }
 }

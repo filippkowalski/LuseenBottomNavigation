@@ -219,6 +219,7 @@ public class BottomNavigationView extends RelativeLayout {
             final View view = inflater.inflate(com.luseen.luseenbottomnavigation.R.layout.bottom_navigation, this, false);
             ImageView icon = (ImageView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_icon);
             TextView title = (TextView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_title);
+            View badge = view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_badge);
 
             if (isCustomFont)
                 title.setTypeface(font);
@@ -237,6 +238,12 @@ public class BottomNavigationView extends RelativeLayout {
             } else {
                 icon.setImageResource(bottomNavigationItems.get(i).getImageResource());
                 icon.setColorFilter(i == currentItem ? itemActiveColorWithoutColoredBackground : itemInactiveColor);
+            }
+
+            if (bottomNavigationItems.get(i).showBadge()) {
+                badge.setVisibility(VISIBLE);
+            } else {
+                badge.setVisibility(GONE);
             }
 
             if (i == currentItem) {
@@ -521,5 +528,16 @@ public class BottomNavigationView extends RelativeLayout {
     public BottomNavigationItem getItem(int position) {
         onBottomNavigationItemClick(position);
         return bottomNavigationItems.get(position);
+    }
+
+    public void showBadge(int position, boolean show) {
+        BottomNavigationItem item = bottomNavigationItems.get(position);
+        item.setShowBadge(show);
+        for (int i = 0; i < viewList.size(); i++) {
+            if (i == position) {
+                View view = viewList.get(position).findViewById(R.id.bottom_navigation_item_badge);
+                view.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        }
     }
 }

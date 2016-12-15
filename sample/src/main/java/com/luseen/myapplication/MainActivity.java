@@ -49,8 +49,10 @@ public class MainActivity extends AppCompatActivity {
                 ("Like", color[1], image[1]);
         BottomNavigationItem bottomNavigationItem2 = new BottomNavigationItem
                 ("Books", color[2], image[2]);
-        BottomNavigationItem bottomNavigationItem3 = new BottomNavigationItem
+       final BottomNavigationItem bottomNavigationItem3 = new BottomNavigationItem
                 ("GitHub", color[3], image[3]);
+
+        bottomNavigationItem3.setShowBadge(true);
 
 
         bottomNavigationView.addTab(bottomNavigationItem);
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 3:
                         textView.setText("GitHub");
+                        bottomNavigationView.showBadge(index, false);
                         break;
                 }
             }

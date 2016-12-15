@@ -20,7 +20,8 @@
         android:scaleY=".9"
         android:scaleX=".9"
         android:layout_gravity="center_horizontal"
-        android:gravity="center" />
+        android:gravity="center"
+        tools:src="@android:color/holo_blue_bright"/>
 
     <TextView
         android:id="@+id/bottom_navigation_item_title"
@@ -31,5 +32,14 @@
         android:lines="1"
         android:textSize="@dimen/bottom_navigation_text_size_inactive"
         tools:text="Label One"/>
+
+    <FrameLayout
+        android:id="@+id/bottom_navigation_item_badge"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="9dp"
+        android:background="@drawable/badge" />
+
 
 </FrameLayout>
