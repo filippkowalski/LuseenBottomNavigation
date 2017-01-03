@@ -246,13 +246,6 @@ public class BottomNavigationView extends RelativeLayout {
                 badge.setVisibility(GONE);
             }
 
-            if (i == currentItem) {
-                container.setBackgroundColor(bottomNavigationItems.get(index).getColor());
-                title.setTextColor(itemActiveColorWithoutColoredBackground);
-                icon.setScaleX((float) 1.1);
-                icon.setScaleY((float) 1.1);
-            }
-
             if (isTablet)
                 view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), i == currentItem ? textActivePaddingTop : withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText,
                         view.getPaddingBottom());
@@ -260,9 +253,7 @@ public class BottomNavigationView extends RelativeLayout {
                 view.setPadding(view.getPaddingLeft(), i == currentItem ? textActivePaddingTop : withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText, view.getPaddingRight(),
                         view.getPaddingBottom());
 
-            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, i == currentItem ?
-                    textActiveSize :
-                    withText ? textInactiveSize : 0);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, textActiveSize);
             title.setText(bottomNavigationItems.get(i).getTitle());
             LayoutParams itemParams = new LayoutParams(itemWidth, itemHeight);
             items.addView(view, itemParams);
