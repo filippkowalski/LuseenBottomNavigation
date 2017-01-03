@@ -288,7 +288,6 @@ public class BottomNavigationView extends RelativeLayout {
                 final TextView title = (TextView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_title);
                 final ImageView icon = (ImageView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_icon);
                 BottomNavigationUtils.changeTextColor(title, itemInactiveColor, itemActiveColorWithoutColoredBackground);
-                BottomNavigationUtils.changeTextSize(title, withText ? textInactiveSize : 0, textActiveSize);
 
                 if (bottomNavigationItems.get(i).getImageResourceActive() != 0) {
                     icon.setImageResource((bottomNavigationItems.get(i).getImageResourceActive()));
@@ -301,12 +300,6 @@ public class BottomNavigationView extends RelativeLayout {
                 else {
                     BottomNavigationUtils.changeViewTopPadding(view, withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText, viewActivePaddingTop);
                 }
-
-                icon.animate()
-                        .setDuration(150)
-                        .scaleX((float) 1.1)
-                        .scaleY((float) 1.1)
-                        .start();
 
                 if (isTablet) {
                     centerX = viewList.get(itemIndex).getWidth() / 2;
@@ -345,18 +338,11 @@ public class BottomNavigationView extends RelativeLayout {
                 }
 
                 BottomNavigationUtils.changeTextColor(title, itemActiveColorWithoutColoredBackground, itemInactiveColor);
-                BottomNavigationUtils.changeTextSize(title, textActiveSize, withText ? textInactiveSize : 0);
 
                 if (isTablet)
                     BottomNavigationUtils.changeRightPadding(view, viewActivePaddingTop, withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText);
                 else
                     BottomNavigationUtils.changeViewTopPadding(view, viewActivePaddingTop, withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText);
-
-                icon.animate()
-                        .setDuration(150)
-                        .scaleX((float) 0.9)
-                        .scaleY((float) 0.9)
-                        .start();
             }
         }
 
