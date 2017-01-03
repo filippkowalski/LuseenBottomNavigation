@@ -34,11 +34,6 @@ public class MainActivity extends AppCompatActivity {
                 ContextCompat.getColor(this, R.color.thirdColor), ContextCompat.getColor(this, R.color.fourthColor)};
 
         if (bottomNavigationView != null) {
-            bottomNavigationView.isWithText(false);
-            // bottomNavigationView.activateTabletMode();
-            bottomNavigationView.isColoredBackground(true);
-            bottomNavigationView.setTextActiveSize(getResources().getDimension(R.dimen.text_active));
-            bottomNavigationView.setTextInactiveSize(getResources().getDimension(R.dimen.text_inactive));
             bottomNavigationView.setItemActiveColorWithoutColoredBackground(ContextCompat.getColor(this, R.color.firstColor));
             bottomNavigationView.setFont(Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Noh_normal.ttf"));
         }
