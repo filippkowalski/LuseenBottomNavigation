@@ -277,9 +277,6 @@ public class BottomNavigationView extends RelativeLayout {
     }
 
     private void onBottomNavigationItemClick(final int itemIndex) {
-        int viewActivePaddingTop = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_active);
-        int viewInactivePaddingTop = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_inactive);
-        int viewInactivePaddingTopWithoutText = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_inactive_without_text);
         int centerX;
         int centerY;
         for (int i = 0; i < viewList.size(); i++) {
@@ -293,12 +290,6 @@ public class BottomNavigationView extends RelativeLayout {
                     icon.setImageResource((bottomNavigationItems.get(i).getImageResourceActive()));
                 } else {
                     BottomNavigationUtils.changeImageColorFilter(icon, itemInactiveColor, itemActiveColorWithoutColoredBackground);
-                }
-
-                if (isTablet)
-                    BottomNavigationUtils.changeRightPadding(view, withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText, viewActivePaddingTop);
-                else {
-                    BottomNavigationUtils.changeViewTopPadding(view, withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText, viewActivePaddingTop);
                 }
 
                 if (isTablet) {
@@ -338,11 +329,6 @@ public class BottomNavigationView extends RelativeLayout {
                 }
 
                 BottomNavigationUtils.changeTextColor(title, itemActiveColorWithoutColoredBackground, itemInactiveColor);
-
-                if (isTablet)
-                    BottomNavigationUtils.changeRightPadding(view, viewActivePaddingTop, withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText);
-                else
-                    BottomNavigationUtils.changeViewTopPadding(view, viewActivePaddingTop, withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText);
             }
         }
 
