@@ -7,8 +7,8 @@
     <dimen name="bottom_navigation_height">56dp</dimen>
     <dimen name="bottom_navigation_line_width">1dp</dimen>
     <dimen name="bottom_navigation_icon">24dp</dimen>
-    <dimen name="bottom_navigation_padding_top_active">5dp</dimen>
-    <dimen name="bottom_navigation_padding_top_inactive">5dp</dimen>
+    <dimen name="bottom_navigation_padding_top_active">8dp</dimen>
+    <dimen name="bottom_navigation_padding_top_inactive">8dp</dimen>
     <dimen name="bottom_navigation_padding_top_inactive_without_text">16dp</dimen>
     <dimen name="bottom_navigation_padding_bottom">7dp</dimen>
     <dimen name="bottom_navigation_padding_left">12dp</dimen>
