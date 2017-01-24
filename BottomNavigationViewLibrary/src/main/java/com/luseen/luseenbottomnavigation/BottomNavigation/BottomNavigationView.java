@@ -1,7 +1,5 @@
 package com.luseen.luseenbottomnavigation.BottomNavigation;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -13,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -277,8 +274,6 @@ public class BottomNavigationView extends RelativeLayout {
     }
 
     private void onBottomNavigationItemClick(final int itemIndex) {
-        int centerX;
-        int centerY;
         for (int i = 0; i < viewList.size(); i++) {
             if (i == itemIndex) {
                 View view = viewList.get(itemIndex).findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_container);
@@ -292,31 +287,8 @@ public class BottomNavigationView extends RelativeLayout {
                     BottomNavigationUtils.changeImageColorFilter(icon, itemInactiveColor, itemActiveColorWithoutColoredBackground);
                 }
 
-                if (isTablet) {
-                    centerX = viewList.get(itemIndex).getWidth() / 2;
-                    centerY = (int) viewList.get(itemIndex).getY() + viewList.get(itemIndex).getHeight() / 2;
-                } else {
-                    centerX = (int) viewList.get(itemIndex).getX() + viewList.get(itemIndex).getWidth() / 2;
-                    centerY = viewList.get(itemIndex).getHeight() / 2;
-                }
-
-                int finalRadius = Math.max(getWidth(), getHeight());
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    backgroundColorTemp.setBackgroundColor(bottomNavigationItems.get(itemIndex).getColor());
-                    Animator changeBackgroundColor = ViewAnimationUtils.createCircularReveal(backgroundColorTemp, centerX, centerY, 0, finalRadius);
-                    changeBackgroundColor.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            container.setBackgroundColor(bottomNavigationItems.get(itemIndex).getColor());
-                        }
-                    });
-                    changeBackgroundColor.start();
-                } else {
-                    BottomNavigationUtils.changeViewBackgroundColor
-                            (container, bottomNavigationItems.get(currentItem).getColor(), bottomNavigationItems.get(itemIndex).getColor());
-                }
-
+                BottomNavigationUtils.changeViewBackgroundColor
+                        (container, bottomNavigationItems.get(currentItem).getColor(), bottomNavigationItems.get(itemIndex).getColor());
             } else if (i == currentItem) {
                 View view = viewList.get(i).findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_container);
                 final TextView title = (TextView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_title);
