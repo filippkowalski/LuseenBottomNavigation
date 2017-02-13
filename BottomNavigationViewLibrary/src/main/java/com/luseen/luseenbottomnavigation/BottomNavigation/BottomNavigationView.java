@@ -3,9 +3,13 @@ package com.luseen.luseenbottomnavigation.BottomNavigation;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -217,6 +221,7 @@ public class BottomNavigationView extends RelativeLayout {
             ImageView icon = (ImageView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_icon);
             TextView title = (TextView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_title);
             View badge = view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_badge);
+            colorDrawable(badge, itemActiveColorWithoutColoredBackground);
 
             if (isCustomFont)
                 title.setTypeface(font);
@@ -482,6 +487,31 @@ public class BottomNavigationView extends RelativeLayout {
                 View view = viewList.get(position).findViewById(R.id.bottom_navigation_item_badge);
                 view.setVisibility(show ? View.VISIBLE : View.GONE);
             }
+        }
+    }
+
+    private void colorDrawable(View view, int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(view.getBackground());
+        Drawable colorizeDrawable = colorizeDrawable(wrappedDrawable, color);
+        setBackgroundDrawable(view, colorizeDrawable);
+    }
+
+
+    @Nullable
+    public Drawable colorizeDrawable(@Nullable Drawable drawable, int color) {
+        if (drawable != null) {
+            drawable.mutate();
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        }
+        return drawable;
+    }
+
+    private void setBackgroundDrawable(View view, Drawable drawable) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            //noinspection deprecation
+            view.setBackgroundDrawable(drawable);
+        } else {
+            view.setBackground(drawable);
         }
     }
 }
