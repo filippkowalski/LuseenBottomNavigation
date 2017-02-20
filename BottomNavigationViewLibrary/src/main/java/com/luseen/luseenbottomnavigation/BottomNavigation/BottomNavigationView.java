@@ -103,6 +103,7 @@ public class BottomNavigationView extends RelativeLayout {
             isTablet = array.getBoolean(R.styleable.BottomNavigationView_bnv_tablet, false);
             viewPagerSlide = array.getBoolean(R.styleable.BottomNavigationView_bnv_viewpager_slide, true);
             itemActiveColorWithoutColoredBackground = array.getColor(R.styleable.BottomNavigationView_bnv_active_color, -1);
+            itemInactiveColor = array.getColor(R.styleable.BottomNavigationView_bnv_inactive_color, -1);
             textActiveSize = array.getDimensionPixelSize(R.styleable.BottomNavigationView_bnv_active_text_size, res.getDimensionPixelSize(R.dimen.bottom_navigation_text_size_active));
             textInactiveSize = array.getDimensionPixelSize(R.styleable.BottomNavigationView_bnv_inactive_text_size, res.getDimensionPixelSize(R.dimen.bottom_navigation_text_size_inactive));
 
@@ -118,12 +119,10 @@ public class BottomNavigationView extends RelativeLayout {
         ViewGroup.LayoutParams params = getLayoutParams();
         if (coloredBackground) {
             itemActiveColorWithoutColoredBackground = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.colorActive);
-            itemInactiveColor = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.colorInactive);
             shadowHeight = (int) getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_shadow_height);
         } else {
             if (itemActiveColorWithoutColoredBackground == -1)
                 itemActiveColorWithoutColoredBackground = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.itemActiveColorWithoutColoredBackground);
-            itemInactiveColor = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.withoutColoredBackground);
             shadowHeight = (int) getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_shadow_height_without_colored_background);
         }
         if (isTablet) {

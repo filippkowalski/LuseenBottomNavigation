@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
                 ContextCompat.getColor(this, R.color.thirdColor), ContextCompat.getColor(this, R.color.fourthColor)};
 
         if (bottomNavigationView != null) {
-            bottomNavigationView.setItemActiveColorWithoutColoredBackground(ContextCompat.getColor(this, R.color.firstColor));
             bottomNavigationView.setFont(Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Noh_normal.ttf"));
         }
 
@@ -48,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
                 ("GitHub", color[3], image[3]);
 
         bottomNavigationItem3.setShowBadge(true);
-
 
         bottomNavigationView.addTab(bottomNavigationItem);
         bottomNavigationView.addTab(bottomNavigationItem1);
