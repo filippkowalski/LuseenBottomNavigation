@@ -37,6 +37,8 @@ public class BottomNavigationView extends RelativeLayout {
 
     private float textInactiveSize;
 
+    private float badgeBorderSize;
+
     private List<BottomNavigationItem> bottomNavigationItems = new ArrayList<>();
 
     private List<View> viewList = new ArrayList<>();
@@ -106,6 +108,7 @@ public class BottomNavigationView extends RelativeLayout {
             itemInactiveColor = array.getColor(R.styleable.BottomNavigationView_bnv_inactive_color, -1);
             textActiveSize = array.getDimensionPixelSize(R.styleable.BottomNavigationView_bnv_active_text_size, res.getDimensionPixelSize(R.dimen.bottom_navigation_text_size_active));
             textInactiveSize = array.getDimensionPixelSize(R.styleable.BottomNavigationView_bnv_inactive_text_size, res.getDimensionPixelSize(R.dimen.bottom_navigation_text_size_inactive));
+            badgeBorderSize = array.getDimensionPixelSize(R.styleable.BottomNavigationView_bnv_badge_border_size, res.getDimensionPixelSize(R.dimen.bottom_navigation_badge_border_size));
 
             array.recycle();
         }

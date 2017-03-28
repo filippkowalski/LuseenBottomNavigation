@@ -15,4 +15,5 @@
     <dimen name="bottom_navigation_padding_right">12dp</dimen>
     <dimen name="bottom_navigation_text_size_active">14sp</dimen>
     <dimen name="bottom_navigation_text_size_inactive">14sp</dimen>
+    <dimen name="bottom_navigation_badge_border_size">2dp</dimen>
 </resources>
