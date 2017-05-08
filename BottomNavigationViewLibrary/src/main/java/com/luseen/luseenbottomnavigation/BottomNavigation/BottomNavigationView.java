@@ -27,23 +27,19 @@ public class BottomNavigationView extends RelativeLayout {
 
     private OnBottomNavigationItemClickListener onBottomNavigationItemClickListener;
 
-    private Context context;
-
     private final int NAVIGATION_HEIGHT = (int) getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_height);
-
     private final int NAVIGATION_LINE_WIDTH = (int) getResources().getDimension(R.dimen.bottom_navigation_line_width);
 
-    private float textActiveSize;
+    private static int currentItem = 0;
 
+    private Context context;
+    private float textActiveSize;
     private float textInactiveSize;
 
     private List<BottomNavigationItem> bottomNavigationItems = new ArrayList<>();
-
     private List<View> viewList = new ArrayList<>();
 
     private int itemActiveColorWithoutColoredBackground = -1;
-
-    private static int currentItem = 0;
 
     private int navigationWidth;
 
@@ -67,16 +63,14 @@ public class BottomNavigationView extends RelativeLayout {
 
     private boolean isCustomFont = false;
 
-    private boolean willNotRecreate = true;
-
-    private FrameLayout container;
+    private FrameLayout mainContainer;
+    private LinearLayout itemsContainer;
 
     private View backgroundColorTemp;
 
     private ViewPager mViewPager;
 
     private Typeface font;
-
 
     public BottomNavigationView(Context context) {
         this(context, null);
@@ -96,7 +90,7 @@ public class BottomNavigationView extends RelativeLayout {
         if (attrs != null) {
             Resources res = getResources();
 
-            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BottomNavigationView);
+            TypedArray array = getContext().obtainStyledAttributes(attrs, R.styleable.BottomNavigationView);
             withText = array.getBoolean(R.styleable.BottomNavigationView_bnv_with_text, true);
             coloredBackground = array.getBoolean(R.styleable.BottomNavigationView_bnv_colored_background, true);
             disableShadow = array.getBoolean(R.styleable.BottomNavigationView_bnv_shadow, false);
@@ -109,14 +103,12 @@ public class BottomNavigationView extends RelativeLayout {
 
             array.recycle();
         }
+
+        initLayoutRoot();
+        setColoredBackgroundMode();
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        navigationWidth = BottomNavigationUtils.getActionbarSize(context);
-        ViewGroup.LayoutParams params = getLayoutParams();
+    private void setColoredBackgroundMode() {
         if (coloredBackground) {
             itemActiveColorWithoutColoredBackground = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.colorActive);
             shadowHeight = (int) getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_shadow_height);
@@ -125,6 +117,59 @@ public class BottomNavigationView extends RelativeLayout {
                 itemActiveColorWithoutColoredBackground = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.itemActiveColorWithoutColoredBackground);
             shadowHeight = (int) getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_shadow_height_without_colored_background);
         }
+    }
+
+    private void initLayoutRoot() {
+        navigationWidth = BottomNavigationUtils.getActionbarSize(context);
+
+        LayoutParams containerParams, params, lineParams;
+        backgroundColorTemp = new View(context);
+        viewList.clear();
+
+        mainContainer = new FrameLayout(context);
+        View shadow = new View(context);
+        View line = new View(context);
+        itemsContainer = new LinearLayout(context);
+        itemsContainer.setOrientation(isTablet ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+        LayoutParams shadowParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, shadowHeight);
+        if (isTablet) {
+            line.setBackgroundColor(ContextCompat.getColor(context, R.color.colorInactive));
+            containerParams = new LayoutParams(navigationWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+            lineParams = new LayoutParams(NAVIGATION_LINE_WIDTH, ViewGroup.LayoutParams.MATCH_PARENT);
+            lineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            params = new LayoutParams(navigationWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+            itemsContainer.setPadding(0, itemHeight / 2, 0, 0);
+            addView(line, lineParams);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                LayoutParams backgroundLayoutParams = new LayoutParams(
+                        navigationWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+                backgroundLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                mainContainer.addView(backgroundColorTemp, backgroundLayoutParams);
+            }
+        } else {
+            params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, NAVIGATION_HEIGHT);
+            containerParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, NAVIGATION_HEIGHT);
+            shadowParams.addRule(RelativeLayout.ABOVE, mainContainer.getId());
+            shadow.setBackgroundResource(com.luseen.luseenbottomnavigation.R.drawable.shadow);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                LayoutParams backgroundLayoutParams = new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, NAVIGATION_HEIGHT);
+                backgroundLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                mainContainer.addView(backgroundColorTemp, backgroundLayoutParams);
+            }
+        }
+        containerParams.addRule(isTablet ? RelativeLayout.ALIGN_PARENT_LEFT : RelativeLayout.ALIGN_PARENT_BOTTOM);
+        addView(shadow, shadowParams);
+        addView(mainContainer, containerParams);
+        mainContainer.addView(itemsContainer, params);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        ViewGroup.LayoutParams params = getLayoutParams();
+
         if (isTablet) {
             params.width = navigationWidth + NAVIGATION_LINE_WIDTH;
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -136,140 +181,95 @@ public class BottomNavigationView extends RelativeLayout {
             }
         }
         setLayoutParams(params);
-
-
     }
 
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        if (willNotRecreate)
-            removeAllViews();
-        if (currentItem < 0 || currentItem > (bottomNavigationItems.size() - 1)) {
-            throw new IndexOutOfBoundsException(currentItem < 0 ? "Position must be 0 or greater than 0, current is " + currentItem
-                    : "Position must be less or equivalent than items size, items size is " + (bottomNavigationItems.size() - 1) + " current is " + currentItem);
-        }
-        if (bottomNavigationItems.size() == 0) {
-            throw new NullPointerException("You need at least one item");
-        }
-        LayoutParams containerParams, params, lineParams;
-        int white = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.white);
-        backgroundColorTemp = new View(context);
-        viewList.clear();
+    private void updateItemSize() {
         if (isTablet) {
             itemWidth = LayoutParams.MATCH_PARENT;
             itemHeight = navigationWidth;
         } else {
-            itemWidth = getWidth() / bottomNavigationItems.size();
+            itemWidth = LayoutParams.MATCH_PARENT;
             itemHeight = LayoutParams.MATCH_PARENT;
         }
-        container = new FrameLayout(context);
-        View shadow = new View(context);
-        View line = new View(context);
-        LinearLayout items = new LinearLayout(context);
-        items.setOrientation(isTablet ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
-        LayoutParams shadowParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, shadowHeight);
-        if (isTablet) {
-            line.setBackgroundColor(ContextCompat.getColor(context, R.color.colorInactive));
-            containerParams = new LayoutParams(navigationWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-            lineParams = new LayoutParams(NAVIGATION_LINE_WIDTH, ViewGroup.LayoutParams.MATCH_PARENT);
-            lineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            params = new LayoutParams(navigationWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-            items.setPadding(0, itemHeight / 2, 0, 0);
-            addView(line, lineParams);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                LayoutParams backgroundLayoutParams = new LayoutParams(
-                        navigationWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-                backgroundLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                container.addView(backgroundColorTemp, backgroundLayoutParams);
-            }
-        } else {
-            params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, NAVIGATION_HEIGHT);
-            containerParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, NAVIGATION_HEIGHT);
-            shadowParams.addRule(RelativeLayout.ABOVE, container.getId());
-            shadow.setBackgroundResource(com.luseen.luseenbottomnavigation.R.drawable.shadow);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                LayoutParams backgroundLayoutParams = new LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, NAVIGATION_HEIGHT);
-                backgroundLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                container.addView(backgroundColorTemp, backgroundLayoutParams);
-            }
-        }
-        containerParams.addRule(isTablet ? RelativeLayout.ALIGN_PARENT_LEFT : RelativeLayout.ALIGN_PARENT_BOTTOM);
-        addView(shadow, shadowParams);
-        addView(container, containerParams);
-        container.addView(items, params);
+    }
+
+    private void addTabView(BottomNavigationItem item) {
+        updateItemSize();
+
+        int white = ContextCompat.getColor(context, com.luseen.luseenbottomnavigation.R.color.white);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        for (int i = 0; i < bottomNavigationItems.size(); i++) {
-            final int index = i;
+        final int index = bottomNavigationItems.size();
+        bottomNavigationItems.add(item);
 
-            if (!coloredBackground)
-                bottomNavigationItems.get(i).setColor(white);
-
-            int textActivePaddingTop = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_active);
-            int viewInactivePaddingTop = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_inactive);
-            int viewInactivePaddingTopWithoutText = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_inactive_without_text);
-            final View view = inflater.inflate(com.luseen.luseenbottomnavigation.R.layout.bottom_navigation, this, false);
-            ImageView icon = (ImageView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_icon);
-            TextView title = (TextView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_title);
-            View badge = view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_badge);
-
-            if (isCustomFont)
-                title.setTypeface(font);
-
-            if (isTablet)
-                title.setVisibility(GONE);
-
-            title.setTextColor(itemInactiveColor);
-            viewList.add(view);
-
-            if (bottomNavigationItems.get(i).getImageResourceActive() != 0) {
-                if (i == currentItem)
-                    icon.setImageResource(bottomNavigationItems.get(i).getImageResourceActive());
-                else
-                    bottomNavigationItems.get(i).getImageResource();
-            } else {
-                icon.setImageResource(bottomNavigationItems.get(i).getImageResource());
-                icon.setColorFilter(i == currentItem ? itemActiveColorWithoutColoredBackground : itemInactiveColor);
-            }
-
-            if (bottomNavigationItems.get(i).showBadge()) {
-                badge.setVisibility(VISIBLE);
-            } else {
-                badge.setVisibility(GONE);
-            }
-
-            if (i == currentItem) {
-                container.setBackgroundColor(bottomNavigationItems.get(index).getColor());
-                title.setTextColor(itemActiveColorWithoutColoredBackground);
-            }
-
-            if (isTablet)
-                view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), i == currentItem ? textActivePaddingTop : withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText,
-                        view.getPaddingBottom());
-            else
-                view.setPadding(view.getPaddingLeft(), i == currentItem ? textActivePaddingTop : withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText, view.getPaddingRight(),
-                        view.getPaddingBottom());
-
-            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, i == currentItem ?
-                    textActiveSize :
-                    withText ? textInactiveSize : 0);
-
-            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, textActiveSize);
-            title.setText(bottomNavigationItems.get(i).getTitle());
-            LayoutParams itemParams = new LayoutParams(itemWidth, itemHeight);
-            items.addView(view, itemParams);
-            view.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBottomNavigationItemClick(index);
-                }
-            });
-
+        if (!coloredBackground) {
+            item.setColor(white);
         }
+
+        int textActivePaddingTop = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_active);
+        int viewInactivePaddingTop = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_inactive);
+        int viewInactivePaddingTopWithoutText = (int) context.getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_padding_top_inactive_without_text);
+        final View view = inflater.inflate(com.luseen.luseenbottomnavigation.R.layout.bottom_navigation, this, false);
+        ImageView icon = (ImageView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_icon);
+        TextView title = (TextView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_title);
+        View badge = view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_badge);
+
+        if (isCustomFont) {
+            title.setTypeface(font);
+        }
+
+        if (isTablet) {
+            title.setVisibility(GONE);
+        }
+
+        title.setTextColor(itemInactiveColor);
+        viewList.add(view);
+
+        boolean selected = index == currentItem;
+
+        if (item.getImageResourceActive() != 0) {
+            if (selected) {
+                icon.setImageResource(item.getImageResourceActive());
+            } else {
+                item.getImageResource();
+            }
+        } else {
+            icon.setImageResource(item.getImageResource());
+            icon.setColorFilter(selected ? itemActiveColorWithoutColoredBackground : itemInactiveColor);
+        }
+
+        if (item.showBadge()) {
+            badge.setVisibility(VISIBLE);
+        } else {
+            badge.setVisibility(GONE);
+        }
+
+        if (selected) {
+            mainContainer.setBackgroundColor(item.getColor());
+            title.setTextColor(itemActiveColorWithoutColoredBackground);
+        }
+
+
+        int paddingFromText = withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText;
+        int paddingFromEdge = selected ? textActivePaddingTop : paddingFromText;
+
+        if (isTablet) {
+            view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), paddingFromEdge, view.getPaddingBottom());
+        } else {
+            view.setPadding(view.getPaddingLeft(), paddingFromEdge, view.getPaddingRight(), view.getPaddingBottom());
+        }
+
+        title.setTextSize(TypedValue.COMPLEX_UNIT_PX, selected ? textActiveSize : withText ? textInactiveSize : 0);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_PX, textActiveSize);
+        title.setText(item.getTitle());
+        LinearLayout.LayoutParams itemParams = new LinearLayout.LayoutParams(itemWidth, itemHeight, 1);
+        itemsContainer.addView(view, itemParams);
+        view.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBottomNavigationItemClick(index);
+            }
+        });
     }
 
     private void onBottomNavigationItemClick(final int itemIndex) {
@@ -287,7 +287,7 @@ public class BottomNavigationView extends RelativeLayout {
                 }
 
                 BottomNavigationUtils.changeViewBackgroundColor
-                        (container, bottomNavigationItems.get(currentItem).getColor(), bottomNavigationItems.get(itemIndex).getColor());
+                        (mainContainer, bottomNavigationItems.get(currentItem).getColor(), bottomNavigationItems.get(itemIndex).getColor());
             } else if (i == currentItem) {
                 View view = viewList.get(i).findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_container);
                 final TextView title = (TextView) view.findViewById(com.luseen.luseenbottomnavigation.R.id.bottom_navigation_item_title);
@@ -334,7 +334,7 @@ public class BottomNavigationView extends RelativeLayout {
      * @param item item to add
      */
     public void addTab(BottomNavigationItem item) {
-        bottomNavigationItems.add(item);
+        addTabView(item);
     }
 
     /**
@@ -369,6 +369,7 @@ public class BottomNavigationView extends RelativeLayout {
      */
     public void isColoredBackground(boolean coloredBackground) {
         this.coloredBackground = coloredBackground;
+        setColoredBackgroundMode();
     }
 
     /**
@@ -427,16 +428,6 @@ public class BottomNavigationView extends RelativeLayout {
      */
     public int getCurrentItem() {
         return currentItem;
-    }
-
-    /**
-     * If your activity/fragment will not recreate
-     * you can call this method
-     *
-     * @param willNotRecreate set true if will not recreate
-     */
-    public void willNotRecreate(boolean willNotRecreate) {
-        this.willNotRecreate = willNotRecreate;
     }
 
     /**
