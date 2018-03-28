@@ -251,7 +251,8 @@ public class BottomNavigationView extends RelativeLayout {
 
 
         int paddingFromText = withText ? viewInactivePaddingTop : viewInactivePaddingTopWithoutText;
-        int paddingFromEdge = selected ? textActivePaddingTop : paddingFromText;
+        //int paddingFromEdge = selected ? textActivePaddingTop : paddingFromText;
+	int paddingFromEdge = paddingFromText;
 
         if (isTablet) {
             view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), paddingFromEdge, view.getPaddingBottom());
